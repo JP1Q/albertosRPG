@@ -19,6 +19,8 @@ MONSTER_DATA_FILE = 'monster_data.pkl'
 SHOP_DATA_FILE = 'shop.pkl'
 BOSS_DATA_FILE = 'boss_data.pkl'
 QUEST_DATA_FILE = 'quest_data.pkl'
+DEV_TOKEN = 'devtoken.txt'
+RUN_TOKEN = 'runtoken.txt'
 
 # Load character data from the file, if it exists
 try:
@@ -384,9 +386,9 @@ async def additem(ctx, item: str = None, buy: int = None, sell: int = None):
     save_shop_data(SHOP_DATA_FILE, shop_items)
 
 
+with open(DEV_TOKEN) as f:
+    token = f.read()
 
 
 
-# DEV BOT TOKEN MTE2MTY4OTk0NDEwMDcxMjQ3OA.G03Cl6.Bi-FvUgz7Jl_UwWKgRteZF6fk2wKePrjuTUpaI
-# RUN BOT TOKEN MTE2MTM1NTk4NzYxNDE4NzYzMA.GLyuLy.Dqknv-v-fzVnFElj0Mpkya7j5EKrOksMTNMzHs
-bot.run('MTE2MTY4OTk0NDEwMDcxMjQ3OA.G03Cl6.Bi-FvUgz7Jl_UwWKgRteZF6fk2wKePrjuTUpaI')
+bot.run(token)
