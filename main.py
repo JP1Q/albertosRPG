@@ -212,9 +212,12 @@ async def farm(ctx):
     )
     m = False 
     for plants in character['farm']:
-       harvest_in = plants['harvest'] - date.datetime.now()
-       embed.add_field(name=f"{plants['count']} {plants['name']}", value=f"Can be harvested in {harvest_in}", inline=False)
-       m = True
+        if plants['harvest'] <= date.datetime.now():
+           harvest_in = "Now"
+        else:
+            harvest_in = plants['harvest'] - date.datetime.now()
+        embed.add_field(name=f"{plants['count']} {plants['name']}", value=f"Can be harvested in {harvest_in}", inline=False)
+        m = True
     if not m:
         await ctx.send(f'Oops, something went wrong')
     
@@ -232,7 +235,7 @@ async def harvest(ctx, item: str = None):
             if plant['harvest'] <= date.datetime.now():
                 n = 0
                 for i in range(plant['count']):
-                    n += random.randint(0,character['farming']+1)
+                    n += random.randint(1,character['farming']+1)
                 
                 character['inventory'] = await add_to_inventory(plant['name'], character, n, character['farming'])
                 character['farm'].remove(plant)
@@ -334,19 +337,27 @@ async def buy(ctx,item: str = None,n: int = 1):
     character['inventory'] = await add_to_inventory(it['name'], character, n, 1)
     await ctx.send(f'You have succesfully purchased {n} {it["name"]}s for {it["price"] * n}')
 
-@bot.command(name="balancetop")
-async def balancetop(ctx):
-    user = ctx.author
-    character = character_sheets[user.id]
-    sorted_leaderboard = sorted(character_sheets, key=lambda character: character["balance"], reverse=True)
-    embed = discord.Embed(
-        title=f"Balance top",
-        color=0x00ff00
-    )
-    for rank, character in enumerate(sorted_leaderboard, start=1):
-        embed.add_field(name =f"Rank {rank}: {character['name']}", value=f"Balance: {character['balance']}")
-
-    await ctx.send(embed=embed)
+# Not working I do not know why :sob:
+# @bot.command(name="baltop")
+# async def leaderboard(ctx):
+#     # Sort character sheets by balance in descending order
+# 
+#     sorted_sheets = sorted(character_sheets, key=lambda sheet: sheet['balance'], reverse=True)
+#     print(sorted_sheets[0])
+#     # Create an embed for the leaderboard
+#     embed = discord.Embed(
+#         title="Balance Leaderboard",
+#         color=discord.Color.gold()
+#     )
+# 
+#     # Populate the embed with the leaderboard data
+#     for index, sheet in enumerate(sorted_sheets, start=1):
+#         embed.add_field(name=f"#{index} - Balance: {sheet['balance']}",
+#                         value=f"Level: {sheet['level']} | HP: {sheet['hp']} | XP: {sheet['xp']}",
+#                         inline=False)
+# 
+#     # Send the leaderboard in the current channel
+#     await ctx.send(embed=embed)
 
 
 
