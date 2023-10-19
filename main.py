@@ -225,17 +225,27 @@ async def harvest(ctx, item: str = None):
     user = ctx.author
     character = character_sheets[user.id]
 
+    found = False
     for plant in character['farm']:
         if plant['name'] == item:
+            found = True
             if plant['harvest'] <= date.datetime.now():
-                n = random.randint(2,character['farm']+1) * plant['count']
-                character['inventory'] = await add_to_inventory(plant['name'], character, n, character['farm'])
+                n = 0
+                for i in range(plant['count']):
+                    n += random.randint(0,character['farming']+1)
+                
+                character['inventory'] = await add_to_inventory(plant['name'], character, n, character['farming'])
                 character['farm'].remove(plant)
-                await ctx.send(f"You have farmed the {n} {plant['name']}")
-                return
+                await ctx.send(f"You have harvested the {n} {plant['name']}")
+
             else:
                 await ctx.send(f'Cannot harvest yet, you can harvest {plant["name"]} in {plant["harvest"] - date.datetime.now()}')
-                return
+    if not found:
+            await ctx.send(f'Invalid plant name')
+            await farm(ctx)
+
+
+    save_character_data(CHARACTER_DATA_FILE, character_sheets)
 
 @bot.command(name="hunt")
 @commands.cooldown(1,30, commands.BucketType.user)
@@ -388,7 +398,5 @@ async def additem(ctx, item: str = None, buy: int = None, sell: int = None):
 
 with open(DEV_TOKEN) as f:
     token = f.read()
-
-
 
 bot.run(token)
